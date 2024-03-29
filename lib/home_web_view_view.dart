@@ -36,7 +36,6 @@ class HomeWebViewScreen extends StatelessWidget {
               return Stack(
                 children: [
                   InAppWebView(
-
                     initialUrlRequest: URLRequest(
                       url: WebUri.uri(Uri.parse(controller.url)),
                     ),
@@ -109,10 +108,12 @@ class HomeWebViewScreen extends StatelessWidget {
                           callback: (value) {
                             logger.i("value ===$value");
                           });
-                      // controllerInApp.addJavaScriptHandler(
-                      //   handlerName: AuthenticationHandler().name,
-                      //   callback: AuthenticationHandler().callback,
-                      // );
+                      controllerInApp.addJavaScriptHandler(
+                        handlerName: "Code",
+                        callback: (value) {
+                          logger.i("Code ===$value");
+                        },
+                      );
                       // controllerInApp.addJavaScriptHandler(
                       //   handlerName: PaymentHandler().name,
                       //   callback: PaymentHandler().callback,
@@ -149,9 +150,12 @@ class HomeWebViewScreen extends StatelessWidget {
                         }));
                       """);
                     },
-                    onLoadError: (controllerInApp, url, code, message) {
-                      //pullToRefreshController!.endRefreshing();
-                      logger.d('onLoadError :$message');
+                    // onLoadError: (controllerInApp, url, code, message) {
+                    //   //pullToRefreshController!.endRefreshing();
+                    //   logger.d('onLoadError :$message');
+                    // },
+                    onReceivedError: (controllerInApp, req, web) {
+                      logger.d('onReceivedError :${web.toString()}');
                     },
                     onProgressChanged: (controllerInApp, progress) {
                       controller.progress.value = progress / 100;

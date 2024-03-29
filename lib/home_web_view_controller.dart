@@ -15,7 +15,8 @@ class HomeWebViewController extends GetxController {
 
   final progress = 0.0.obs;
 
-  String url = 'https://stagebas.yk-bank.com:9104/';
+  String url = 'https://anawebykb.web.app/conn/auth/?response_type=code&client_id=ykb_lite_app&scope=user.profile%20idCard%20phone%20mail&redirect_uri=sdk&channel=api';
+  // String url = 'https://stagebas.yk-bank.com:9104/';
   // String url = 'https://anawebykb.web.app/';
 
   Future<bool> onBack({bool byDeviceBackButton = false}) async {
