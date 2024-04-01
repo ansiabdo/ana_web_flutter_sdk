@@ -5,6 +5,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'callbackhandler.dart';
 import 'home_web_view_controller.dart';
 import 'main.dart';
 
@@ -45,7 +46,7 @@ class HomeWebViewScreen extends StatelessWidget {
                           action: ServerTrustAuthResponseAction.PROCEED);
                     },
                     onPrint: (con, uri) {
-                      logger.d(uri);
+                      logger.d("uri :$uri");
                     },
 
                     initialUserScripts: UnmodifiableListView<UserScript>([]),
@@ -84,36 +85,40 @@ class HomeWebViewScreen extends StatelessWidget {
                     },
                     onWebViewCreated: (controllerInApp) {
                       controller.webController = controllerInApp;
+                      // controllerInApp.addJavaScriptHandler(
+                      //     // https://stackoverflow.com/a/67783801
+                      //     // Or https://medium.com/flutter-community/flutter-webview-javascript-communication-inappwebview-5-403088610949
+                      //     // Add the flowing data on WebPage
+                      //     // <button onclick="performClick('2'); window.flutter_inappwebview.callHandler('Back');">Back</Button>
+                      //     // execute inside the "flutterInAppWebViewPlatformReady" event listener
+                      //     //   window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
+                      //     //   const args = [1, true, ['bar', 5], {foo: 'baz'}];
+                      //     //   window.flutter_inappwebview.callHandler('myHandlerName', ...args);
+                      //     //   });
+                      //     //   // or using a global flag variable
+                      //     //   var isFlutterInAppWebViewReady = false;
+                      //     //   window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
+                      //     //       isFlutterInAppWebViewReady = true;
+                      //     //       });
+                      //     //    // then,  somewhere in your code
+                      //     //       if (isFlutterInAppWebViewReady) {
+                      //     //         const args = [1, true, ['bar', 5], {foo: 'baz'}];
+                      //     //         window.flutter_inappwebview.callHandler('myHandlerName', ...args);
+                      //     //       }
+                      //     handlerName: "Back",
+                      //     callback: (value) {
+                      //       logger.i("value ===$value");
+                      //     });
                       controllerInApp.addJavaScriptHandler(
-                          // https://stackoverflow.com/a/67783801
-                          // Or https://medium.com/flutter-community/flutter-webview-javascript-communication-inappwebview-5-403088610949
-                          // Add the flowing data on WebPage
-                          // <button onclick="performClick('2'); window.flutter_inappwebview.callHandler('Back');">Back</Button>
-                          // execute inside the "flutterInAppWebViewPlatformReady" event listener
-                          //   window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
-                          //   const args = [1, true, ['bar', 5], {foo: 'baz'}];
-                          //   window.flutter_inappwebview.callHandler('myHandlerName', ...args);
-                          //   });
-                          //   // or using a global flag variable
-                          //   var isFlutterInAppWebViewReady = false;
-                          //   window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
-                          //       isFlutterInAppWebViewReady = true;
-                          //       });
-                          //    // then,  somewhere in your code
-                          //       if (isFlutterInAppWebViewReady) {
-                          //         const args = [1, true, ['bar', 5], {foo: 'baz'}];
-                          //         window.flutter_inappwebview.callHandler('myHandlerName', ...args);
-                          //       }
-                          handlerName: "Back",
-                          callback: (value) {
-                            logger.i("value ===$value");
-                          });
-                      controllerInApp.addJavaScriptHandler(
-                        handlerName: "Code",
-                        callback: (value) {
-                          logger.i("Code ===$value");
-                        },
-                      );
+                          handlerName: CallbackHandler().name,
+                          callback: CallbackHandler().callback);
+                      //   handlerName: "anaFetchAuthCode",
+                      //   callback: (args) async {
+                      //     logger.d(args.toString());
+                      //     logger.i("anaFetchAuthCode ===$args");
+                      //     return args;
+                      //   },
+                      // );
                       // controllerInApp.addJavaScriptHandler(
                       //   handlerName: PaymentHandler().name,
                       //   callback: PaymentHandler().callback,
@@ -128,7 +133,7 @@ class HomeWebViewScreen extends StatelessWidget {
                       // );
                     },
                     onLoadStop: (controllerInApp, url) async {
-                      logger.d('onLoadStop');
+                      //logger.d('onLoadStop');
                       controller.progressStatus.value = ProgressStatus.ready;
                       logger.d(
                         "[onLoadStop]: ${url?.path}",
