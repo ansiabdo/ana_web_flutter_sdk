@@ -1,5 +1,8 @@
 import 'dart:collection';
 
+import 'package:anaweb_flutter_sdk/utils/utils.dart';
+import 'package:anaweb_flutter_sdk/views/console_message_bottom_sheet.dart';
+import 'package:anaweb_flutter_sdk/views/title_responsive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
@@ -32,7 +35,27 @@ class HomeWebViewScreen extends StatelessWidget {
             return result;
           },
           child: Scaffold(
-            body: Obx(() {
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Get.theme.colorScheme.surface,
+              foregroundColor: Get.theme.colorScheme.onSurface,
+              automaticallyImplyLeading: false,
+              title: TitleResponsive(
+                onBack: () => controller.onBack(),
+                actions: [
+                    ConsoleMessageBottomSheet(
+                      controller: controller,
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.highlight_off),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+                child:  const Text("ANA-WEB Flutter SDK"),
+                //title: controller.title.value,
+              ),
+            ),
+            body:Obx(() {
               controller.progress.value;
               return Stack(
                 children: [
@@ -40,16 +63,40 @@ class HomeWebViewScreen extends StatelessWidget {
                     initialUrlRequest: URLRequest(
                       url: WebUri.uri(Uri.parse(controller.url)),
                     ),
+                    initialUserScripts: UnmodifiableListView<UserScript>([]),
+                    initialSettings: InAppWebViewSettings(
+                      ///android AndroidInAppWebViewOptions
+                      useHybridComposition: true,
+                      cacheMode: CacheMode.LOAD_NO_CACHE,
+                      clearSessionCache: true,
+
+                      /// ios IOSInAppWebViewOptions
+                      allowsInlineMediaPlayback: true,
+
+                      ///crossPlatform InAppWebViewOptions
+                      supportZoom: false,
+                      mediaPlaybackRequiresUserGesture: false,
+                      allowFileAccessFromFileURLs: true,
+                      allowUniversalAccessFromFileURLs: true,
+                      // cacheEnabled: false,
+                      // clearCache: true,
+
+                      cacheEnabled: true,
+                      clearCache: true,
+                      disableContextMenu: true,
+                      // hardwareAcceleration: true,
+                      // rendererPriorityPolicy: RendererPriorityPolicy()
+                    ),
+
                     onReceivedServerTrustAuthRequest:
                         (controller, challenge) async {
                       return ServerTrustAuthResponse(
                           action: ServerTrustAuthResponseAction.PROCEED);
                     },
-                    onPrint: (con, uri) {
-                      logger.w("uri :$uri");
-                    },
+                    // onPrint: (con, uri) {
+                    //   logger.w("uri :$uri");
+                    // },
 
-                    initialUserScripts: UnmodifiableListView<UserScript>([]),
                     // initialOptions: InAppWebViewGroupOptions(
                     //   crossPlatform: InAppWebViewOptions(
                     //     supportZoom: false,
@@ -159,19 +206,23 @@ class HomeWebViewScreen extends StatelessWidget {
                     //   //pullToRefreshController!.endRefreshing();
                     //   logger.d('onLoadError :$message');
                     // },
-                    onReceivedError: (controllerInApp, req, web) {
-                      logger.d('onReceivedError :${web.toString()}');
+                    onReceivedError: (InAppWebViewController controller,
+                        WebResourceRequest request, WebResourceError error) {
+                    // onReceivedError: (controllerInApp, req, web) {
+                      logger.d('onReceivedError :${error.toString()}');
                     },
                     onProgressChanged: (controllerInApp, progress) {
                       controller.progress.value = progress / 100;
                       logger.d("progress :$progress");
-                      // if (progress == 100) {
-                      //   controller.progressStatus.value = ProgressStatus.ready;
-                      //   //pullToRefreshController!.endRefreshing();
-                      // }
+                      if (progress == 100) {
+                        controller.progressStatus.value = ProgressStatus.ready;
+                      }
                     },
                     onConsoleMessage: (_, consoleMessage) {
-                      logger.d("[Console]: ${consoleMessage.message}");
+                      AppLog.debug("[Console]: ${consoleMessage.message}", 'onConsoleMessage');
+
+                      logger.d("[Console-d]: ${consoleMessage.message}");
+                      controller.consoleMessagesList.add(consoleMessage.message);
                     },
                   ),
                   if (controller.progressStatus.value != ProgressStatus.ready &&
