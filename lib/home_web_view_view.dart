@@ -46,7 +46,7 @@ class HomeWebViewScreen extends StatelessWidget {
                           action: ServerTrustAuthResponseAction.PROCEED);
                     },
                     onPrint: (con, uri) {
-                      logger.d("uri :$uri");
+                      logger.w("uri :$uri");
                     },
 
                     initialUserScripts: UnmodifiableListView<UserScript>([]),
@@ -143,7 +143,7 @@ class HomeWebViewScreen extends StatelessWidget {
                         var JSBridge = {
                           call: window.flutter_inappwebview.callHandler,
                           flutterCall: function(name,args,callback){
-                            //console.log("flutterCall"+JSON.stringify(args));
+                            console.log("flutterCall"+JSON.stringify(args));
                              //console.log("flutterCall"+args);
                             JSBridge.call(name,args)
                             .then(callback);

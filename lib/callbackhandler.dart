@@ -19,8 +19,8 @@ class CallbackHandler {
     // Define the Completer that handle the process
     final completer = Completer();
 
-    // Get [clientId] required the authenticate miniapp with user.
     final code = args.first["Code"];
+    logger.w("callback Code ===$code");
 
     completer.complete(code);
     // controller().checkUserConsent(
