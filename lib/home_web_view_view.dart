@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:anaweb_flutter_sdk/utils/utils.dart';
 import 'package:anaweb_flutter_sdk/views/console_message_bottom_sheet.dart';
@@ -43,19 +44,19 @@ class HomeWebViewScreen extends StatelessWidget {
               title: TitleResponsive(
                 onBack: () => controller.onBack(),
                 actions: [
-                    ConsoleMessageBottomSheet(
-                      controller: controller,
-                    ),
+                  ConsoleMessageBottomSheet(
+                    controller: controller,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.highlight_off),
                     onPressed: () => Get.back(),
                   ),
                 ],
-                child:  const Text("ANA-WEB Flutter SDK"),
+                child: const Text("ANA-WEB Flutter SDK"),
                 //title: controller.title.value,
               ),
             ),
-            body:Obx(() {
+            body: Obx(() {
               controller.progress.value;
               return Stack(
                 children: [
@@ -159,31 +160,28 @@ class HomeWebViewScreen extends StatelessWidget {
                       controllerInApp.addJavaScriptHandler(
                           handlerName: CallbackHandler().name,
                           callback: CallbackHandler().callback);
-                      //   handlerName: "anaFetchAuthCode",
-                      //   callback: (args) async {
-                      //     logger.d(args.toString());
-                      //     logger.i("anaFetchAuthCode ===$args");
-                      //     return args;
-                      //   },
-                      // );
-                      // controllerInApp.addJavaScriptHandler(
-                      //   handlerName: PaymentHandler().name,
-                      //   callback: PaymentHandler().callback,
-                      // );
-                      // controllerInApp.addJavaScriptHandler(
-                      //   handlerName: CheckPermissionHandler().name,
-                      //   callback: CheckPermissionHandler().callback,
-                      // );
-                      // controllerInApp.addJavaScriptHandler(
-                      //   handlerName: RequestPermissionHandler().name,
-                      //   callback: RequestPermissionHandler().callback,
-                      // );
+                    },
+                    onLoadStart: (controllerInApp, url) async {
+                      if (url!.queryParameters.containsKey('isconsent')) {
+                        var auth_code =
+                            url.queryParameters.entries.elementAt(1);
+                        var params = url.queryParameters;
+                        logger.d(
+                          "isconsent : $auth_code",
+                        );
+                        controllerInApp.stopLoading();
+                        Get.offAllNamed("/", parameters: params);
+                      }
+                      logger.d(
+                        "[onLoadStop]: ${url.path} -- ${jsonEncode(url.queryParameters)}",
+                      );
                     },
                     onLoadStop: (controllerInApp, url) async {
                       //logger.d('onLoadStop');
+
                       controller.progressStatus.value = ProgressStatus.ready;
                       logger.d(
-                        "[onLoadStop]: ${url?.path}",
+                        "[onLoadStop]: ${url?.path} -- ${jsonEncode(url?.queryParameters)}",
                       );
 
                       await controllerInApp.evaluateJavascript(source: """
@@ -208,7 +206,7 @@ class HomeWebViewScreen extends StatelessWidget {
                     // },
                     onReceivedError: (InAppWebViewController controller,
                         WebResourceRequest request, WebResourceError error) {
-                    // onReceivedError: (controllerInApp, req, web) {
+                      // onReceivedError: (controllerInApp, req, web) {
                       logger.d('onReceivedError :${error.toString()}');
                     },
                     onProgressChanged: (controllerInApp, progress) {
@@ -219,10 +217,12 @@ class HomeWebViewScreen extends StatelessWidget {
                       }
                     },
                     onConsoleMessage: (_, consoleMessage) {
-                      AppLog.debug("[Console]: ${consoleMessage.message}", 'onConsoleMessage');
+                      AppLog.debug("[Console]: ${consoleMessage.message}",
+                          'onConsoleMessage');
 
                       logger.d("[Console-d]: ${consoleMessage.message}");
-                      controller.consoleMessagesList.add(consoleMessage.message);
+                      controller.consoleMessagesList
+                          .add(consoleMessage.message);
                     },
                   ),
                   if (controller.progressStatus.value != ProgressStatus.ready &&
