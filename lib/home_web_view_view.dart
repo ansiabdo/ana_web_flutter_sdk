@@ -15,11 +15,7 @@ import 'main.dart';
 
 class HomeWebViewScreen extends StatelessWidget {
   static const String routeName = '/home_web_view_screen';
-
   const HomeWebViewScreen({super.key});
-
-  // get logger => LOGW;
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<HomeWebViewController>(
@@ -53,7 +49,6 @@ class HomeWebViewScreen extends StatelessWidget {
                   ),
                 ],
                 child: const Text("ANA-WEB Flutter SDK"),
-                //title: controller.title.value,
               ),
             ),
             body: Obx(() {
@@ -88,32 +83,11 @@ class HomeWebViewScreen extends StatelessWidget {
                       // hardwareAcceleration: true,
                       // rendererPriorityPolicy: RendererPriorityPolicy()
                     ),
-
                     onReceivedServerTrustAuthRequest:
                         (controller, challenge) async {
                       return ServerTrustAuthResponse(
                           action: ServerTrustAuthResponseAction.PROCEED);
                     },
-                    // onPrint: (con, uri) {
-                    //   logger.w("uri :$uri");
-                    // },
-
-                    // initialOptions: InAppWebViewGroupOptions(
-                    //   crossPlatform: InAppWebViewOptions(
-                    //     supportZoom: false,
-                    //     mediaPlaybackRequiresUserGesture: false,
-                    //     allowFileAccessFromFileURLs: true,
-                    //     allowUniversalAccessFromFileURLs: true,
-                    //     disableContextMenu: true,
-                    //   ),
-                    //   android: AndroidInAppWebViewOptions(
-                    //     useHybridComposition: true,
-                    //     clearSessionCache: true,
-                    //   ),
-                    //   ios: IOSInAppWebViewOptions(
-                    //     allowsInlineMediaPlayback: true,
-                    //   ),
-                    // ),
                     shouldOverrideUrlLoading:
                         (controllerInApp, navigationAction) async {
                       var uri = navigationAction.request.url!;
@@ -133,30 +107,6 @@ class HomeWebViewScreen extends StatelessWidget {
                     },
                     onWebViewCreated: (controllerInApp) {
                       controller.webController = controllerInApp;
-                      // controllerInApp.addJavaScriptHandler(
-                      //     // https://stackoverflow.com/a/67783801
-                      //     // Or https://medium.com/flutter-community/flutter-webview-javascript-communication-inappwebview-5-403088610949
-                      //     // Add the flowing data on WebPage
-                      //     // <button onclick="performClick('2'); window.flutter_inappwebview.callHandler('Back');">Back</Button>
-                      //     // execute inside the "flutterInAppWebViewPlatformReady" event listener
-                      //     //   window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
-                      //     //   const args = [1, true, ['bar', 5], {foo: 'baz'}];
-                      //     //   window.flutter_inappwebview.callHandler('myHandlerName', ...args);
-                      //     //   });
-                      //     //   // or using a global flag variable
-                      //     //   var isFlutterInAppWebViewReady = false;
-                      //     //   window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
-                      //     //       isFlutterInAppWebViewReady = true;
-                      //     //       });
-                      //     //    // then,  somewhere in your code
-                      //     //       if (isFlutterInAppWebViewReady) {
-                      //     //         const args = [1, true, ['bar', 5], {foo: 'baz'}];
-                      //     //         window.flutter_inappwebview.callHandler('myHandlerName', ...args);
-                      //     //       }
-                      //     handlerName: "Back",
-                      //     callback: (value) {
-                      //       logger.i("value ===$value");
-                      //     });
                       controllerInApp.addJavaScriptHandler(
                           handlerName: CallbackHandler().name,
                           callback: CallbackHandler().callback);
@@ -177,8 +127,6 @@ class HomeWebViewScreen extends StatelessWidget {
                       );
                     },
                     onLoadStop: (controllerInApp, url) async {
-                      //logger.d('onLoadStop');
-
                       controller.progressStatus.value = ProgressStatus.ready;
                       logger.d(
                         "[onLoadStop]: ${url?.path} -- ${jsonEncode(url?.queryParameters)}",
@@ -200,10 +148,6 @@ class HomeWebViewScreen extends StatelessWidget {
                         }));
                       """);
                     },
-                    // onLoadError: (controllerInApp, url, code, message) {
-                    //   //pullToRefreshController!.endRefreshing();
-                    //   logger.d('onLoadError :$message');
-                    // },
                     onReceivedError: (InAppWebViewController controller,
                         WebResourceRequest request, WebResourceError error) {
                       // onReceivedError: (controllerInApp, req, web) {
@@ -230,13 +174,6 @@ class HomeWebViewScreen extends StatelessWidget {
                       controller.progress.value <= 1.0)
                     Center(
                       child: LoadingProgressBar(),
-                      // child: ProductsShimmerList(
-                      //   inGrid: true,
-                      //   horizontal: false,
-                      //   imageHeight: 120,
-                      //   containerWidth: double.infinity,
-                      //   itemCount: 12,
-                      // ),
                     )
                 ],
               );
@@ -249,10 +186,6 @@ class HomeWebViewScreen extends StatelessWidget {
 
   Future<bool> _onPop() {
     final controller = Get.find<HomeWebViewController>();
-    // if (controller.getCurrentIndex != 0) {
-    //   controller.changePageIndex(0);
-    //   return Future.value(false);
-    // } else {
     DateTime now = DateTime.now();
     if (controller.currentBackPressTime == null ||
         now.difference(controller.currentBackPressTime!) >
@@ -264,12 +197,10 @@ class HomeWebViewScreen extends StatelessWidget {
       return Future.value(false);
     }
     return Future.value(true);
-    // }
   }
 
   static Future<void> openUrlLink({required String? urlLink}) async {
     if (urlLink == null || urlLink.isEmpty) {
-      // DifferentDialogs.toastMessage(message: AppStrings.noUrlAvailable.tr);
       return;
     }
     final uri = Uri.parse(urlLink);
@@ -279,9 +210,6 @@ class HomeWebViewScreen extends StatelessWidget {
       var config = const WebViewConfiguration();
       await launchUrl(uri,
           mode: LaunchMode.externalApplication, webViewConfiguration: config);
-    } else {
-      // Get.showSnackbar(DifferentDialogs.errorSnackBar(
-      //     message: AppStrings.openFileError.tr.capitalizeFirst));
     }
   }
 

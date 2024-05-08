@@ -16,11 +16,8 @@ class HomeWebViewController extends GetxController {
   final progress = 0.0.obs;
   RxList<String> consoleMessagesList = RxList();
 
-  // String url = 'https://anawebykb.web.app/conn/auth?response_type=code&client_id=ykb_lite_app&scope=user.profile%20idCard%20phone%20mail&redirect_uri=https:%2F%2Fstagebas.yk-bank.com:9104%2Fapi%2Fv1%2Fauth%2Fcallback&channel=api&sdk=1';
-  String url = 'https://anawebykb.web.app/conn/auth?response_type=code&client_id=ykb_lite_app&scope=user.profile%20idCard%20phone%20mail&redirect_uri=https:%2F%2Fstagebas.yk-bank.com:9104%2Fapi%2Fv1%2Fauth%2Fcallback&channel=api&callbackUri=https:%2F%2Flocalhost&sdk=1';
-  // String url = 'https://stagebas.yk-bank.com:9104/conn/auth?response_type=code&client_id=ykb_lite_app&scope=user.profile%20idCard%20phone%20mail&redirect_uri=https:%2F%2Fstagebas.yk-bank.com:9104%2Fapi%2Fv1%2Fauth%2Fcallback&channel=api&callbackUri=https:%2F%2Flocalhost';
-  // String url = 'https://stagebas.yk-bank.com:9104/';
-  // String url = 'https://anawebykb.web.app/';
+  String url = 'https://anawebykb.web.app/conn/auth?response_type=code&client_id=ykb_lite_app&scope=user.profile%20idCard%20phone%20mail&redirect_uri=https:%2F%2Fstagebas.yk-bank.com:9104%2Fapi%2Fv1%2Fauth%2Fcallback&channel=api&callbackUri=https:%2F%2Flocalhost';
+  // String url = 'https://stagebas.yk-bank.com:9104/conn/auth?response_type=code&client_id=ykb_lite_app&scope=user.profile%20idCard%20phone%20mail&redirect_uri=https:%2F%2Fstagebas.yk-bank.com:9104%2Fapi%2Fv1%2Fauth%2Fcallback&channel=api&callbackUri=https:%2F%2Flocalhost&sdk=1';
 
   Future<bool> onBack({bool byDeviceBackButton = false}) async {
     bool? x =
@@ -31,11 +28,7 @@ class HomeWebViewController extends GetxController {
       navUrl = navUrl?.substring(0, navUrl.length - 1);
     }
     final miniAppBaseUrl = Uri.encodeFull(url);
-    // logger.d(navUrl);
-    // logger.d(miniAppBaseUrl);
-    // bool inHomeOfMiniAppUrl = navUrl?.split('/').last == appUrl.split('/').last;
     bool isInHomeOfMiniApp = await webController?.canGoBack() == false;
-    // logger.i(isInHomeOfMiniApp);
     bool canBackWithGet =
         isInHomeOfMiniApp || navUrl == null || navUrl == miniAppBaseUrl;
 
@@ -43,7 +36,6 @@ class HomeWebViewController extends GetxController {
       if (byDeviceBackButton) {
         return true;
       }
-      // Get.back();
       return true;
     } else {
       webController?.goBack();

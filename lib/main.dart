@@ -22,7 +22,6 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: const HomeWebViewScreen(),
       home: const MyHomePage(
           title: "ANA-Web Flutter SDK", auth_code: "auth_code1"),
       getPages: [
@@ -35,7 +34,6 @@ class MyApp extends StatelessWidget {
             name: '/home_web_view_screen',
             page: () => const HomeWebViewScreen()),
       ],
-      // home: const MyHomePage(title: "title"),
     );
   }
 }
@@ -84,13 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: const Text("Open Ana-Web")),
                   ],
                 ),
-                // const Row(
-                //   children: [
-                //     SizedBox(
-                //       width: 16,
-                //     ),
-                //   ],
-                // ),
                 Row(
                   children: [
                     SizedBox(
@@ -110,12 +101,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

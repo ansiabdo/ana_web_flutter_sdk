@@ -88,5 +88,4 @@ class ConsoleMessageBottomSheet extends StatelessWidget {
           top: Radius.circular(32.0),
         ),
       );
-
 }
