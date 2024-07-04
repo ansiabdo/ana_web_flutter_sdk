@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:anaweb_flutter_sdk/utils/utils.dart';
 import 'package:anaweb_flutter_sdk/views/console_message_bottom_sheet.dart';
 import 'package:anaweb_flutter_sdk/views/title_responsive.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
@@ -15,7 +16,9 @@ import 'main.dart';
 
 class HomeWebViewScreen extends StatelessWidget {
   static const String routeName = '/home_web_view_screen';
+
   const HomeWebViewScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<HomeWebViewController>(
@@ -48,7 +51,7 @@ class HomeWebViewScreen extends StatelessWidget {
                     onPressed: () => Get.back(),
                   ),
                 ],
-                child: const Text("ANA-WEB Flutter SDK"),
+                child: const Text("ANA-WEB SDK Demo"),
               ),
             ),
             body: Obx(() {
@@ -57,32 +60,34 @@ class HomeWebViewScreen extends StatelessWidget {
                 children: [
                   InAppWebView(
                     initialUrlRequest: URLRequest(
-                      url: WebUri.uri(Uri.parse(controller.url)),
+                      url: WebUri.uri(Uri.parse(controller.getURL())),
                     ),
                     initialUserScripts: UnmodifiableListView<UserScript>([]),
-                    initialSettings: InAppWebViewSettings(
-                      ///android AndroidInAppWebViewOptions
-                      useHybridComposition: true,
-                      cacheMode: CacheMode.LOAD_NO_CACHE,
-                      clearSessionCache: true,
-
-                      /// ios IOSInAppWebViewOptions
-                      allowsInlineMediaPlayback: true,
-
-                      ///crossPlatform InAppWebViewOptions
-                      supportZoom: false,
-                      mediaPlaybackRequiresUserGesture: false,
-                      allowFileAccessFromFileURLs: true,
-                      allowUniversalAccessFromFileURLs: true,
-                      // cacheEnabled: false,
-                      // clearCache: true,
-
-                      cacheEnabled: true,
-                      clearCache: true,
-                      disableContextMenu: true,
-                      // hardwareAcceleration: true,
-                      // rendererPriorityPolicy: RendererPriorityPolicy()
+                    initialSettings: controller.settings,
+                    pullToRefreshController: PullToRefreshController(
+                      settings: PullToRefreshSettings(
+                        color: Colors.blue,
+                      ),
+                      onRefresh: () async {
+                        if (defaultTargetPlatform == TargetPlatform.android) {
+                          controller.webController?.reload();
+                        } else if (defaultTargetPlatform ==
+                            TargetPlatform.iOS) {
+                          controller.webController?.loadUrl(
+                              urlRequest: URLRequest(
+                                  url: await controller.webController
+                                      ?.getUrl()));
+                        }
+                      },
                     ),
+                    onPermissionRequest: (controller, request) async {
+                      logger.d(
+                        "request.resources : ${request.resources}",
+                      );
+                      return PermissionResponse(
+                          resources: request.resources,
+                          action: PermissionResponseAction.GRANT);
+                    },
                     onReceivedServerTrustAuthRequest:
                         (controller, challenge) async {
                       return ServerTrustAuthResponse(
